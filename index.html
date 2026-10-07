@@ -158,7 +158,7 @@
     margin:10px 0 0;
   }
   .result-score small{font-size:28px;color:var(--gold)}
-  .stars{text-align:center;font-size:30px;letter-spacing:6px;margin:6px 0 4px}
+  .stars{text-align:center;font-size:26px;letter-spacing:3px;margin:6px 0 4px}
 
   @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   @media (max-width:420px){.card{padding:32px 20px 24px}}
@@ -173,14 +173,14 @@
     <span class="emoji" aria-hidden="true">💄</span>
     <p class="eyebrow">Das Spiel für Beauty-Fans</p>
     <h1>Kosmetik-Quiz</h1>
-    <p class="lead">Wie gut kennst du dich mit Pflege, Make-up und Hautwissen aus?<br>5 Fragen, 3 Antworten – nur eine ist richtig. Viel Spaß!</p>
+    <p class="lead">Wie gut kennst du dich mit Pflege, Make-up und Hautwissen aus?<br>10 Fragen, 3 Antworten – nur eine ist richtig. Viel Spaß!</p>
     <button class="btn" id="startBtn" type="button">Quiz starten ✨</button>
   </section>
 
   <!-- Frage -->
   <section id="game" class="hidden">
     <div class="progress-wrap">
-      <span id="counter">Frage 1 von 5</span>
+      <span id="counter">Frage 1 von 10</span>
       <div class="progress" aria-hidden="true"><span id="bar"></span></div>
       <span class="score-live" id="scoreLive">⭐ 0</span>
     </div>
@@ -195,7 +195,7 @@
     <span class="emoji" id="resultEmoji" aria-hidden="true">🌸</span>
     <p class="eyebrow">Dein Ergebnis</p>
     <h1 id="resultTitle"></h1>
-    <p class="result-score"><span id="finalScore">0</span><small> / 5 Punkte</small></p>
+    <p class="result-score"><span id="finalScore">0</span><small> / <span id="totalQ">10</span> Punkte</small></p>
     <div class="stars" id="stars" aria-hidden="true"></div>
     <p class="lead" id="resultText"></p>
     <button class="btn" id="restartBtn" type="button">Nochmal spielen 💅</button>
@@ -234,14 +234,44 @@
       a: ["Nie – das ist nicht nötig", "Einmal im Jahr", "Ungefähr einmal pro Woche"],
       correct: 2,
       info: "Auf ungewaschenen Pinseln sammeln sich Talg, Make-up-Reste und Bakterien. Das kann die Haut reizen und Unreinheiten fördern."
+    },
+    {
+      q: "Wofür wird ein Primer verwendet?",
+      a: ["Zum Entfernen von Make-up", "Zum Aufhellen der Zähne", "Als Grundlage, damit Make-up besser hält"],
+      correct: 2,
+      info: "Ein Primer glättet die Haut optisch, mattiert oder spendet Glow und sorgt dafür, dass Foundation länger hält."
+    },
+    {
+      q: "Wie oft pro Woche ist ein Gesichtspeeling für die meisten Hauttypen sinnvoll?",
+      a: ["Ein- bis zweimal pro Woche", "Mehrmals täglich", "Nur einmal im Jahr"],
+      correct: 0,
+      info: "Ein sanftes Peeling entfernt abgestorbene Hautzellen. Zu häufiges Peelen reizt die Haut und stört ihre Schutzbarriere."
+    },
+    {
+      q: "Was ist Retinol?",
+      a: ["Ein Duftstoff in Parfüms", "Ein Farbstoff in Lippenstiften", "Ein Vitamin-A-Wirkstoff gegen Fältchen und Unreinheiten"],
+      correct: 2,
+      info: "Retinol fördert die Zellerneuerung. Am besten abends auftragen und tagsüber unbedingt Sonnenschutz verwenden."
+    },
+    {
+      q: "Was bedeutet „nicht komedogen“ auf einem Pflegeprodukt?",
+      a: ["Es enthält viel Parfüm", "Es verstopft die Poren nicht", "Es ist wasserfest"],
+      correct: 1,
+      info: "Nicht komedogene Produkte fördern keine Mitesser und sind besonders für unreine und empfindliche Haut geeignet."
+    },
+    {
+      q: "Nach wie vielen Monaten solltest du eine geöffnete Mascara spätestens austauschen?",
+      a: ["Nach etwa 3 Monaten", "Nach 2 Jahren", "Nach 5 Jahren"],
+      correct: 0,
+      info: "In der feuchten Mascara-Tube vermehren sich schnell Keime, die am empfindlichen Auge Entzündungen auslösen können."
     }
   ];
 
   const results = [
     { min: 0, emoji: "🌱", title: "Beauty-Einsteigerin", text: "Ein guter Anfang! Mit ein bisschen Übung wirst du bald zur Pflege-Expertin. Probier es gleich nochmal!" },
-    { min: 2, emoji: "🌸", title: "Pflege-Talent", text: "Du weißt schon einiges über Kosmetik. Mit etwas mehr Wissen wirst du bald zum echten Profi." },
-    { min: 4, emoji: "💖", title: "Kosmetik-Expertin", text: "Wow, sehr stark! Du kennst dich richtig gut mit Pflege und Make-up aus." },
-    { min: 5, emoji: "👑", title: "Beauty-Queen", text: "Perfekt! Alle Fragen richtig – du bist eine absolute Kosmetik-Königin!" }
+    { min: 0.4, emoji: "🌸", title: "Pflege-Talent", text: "Du weißt schon einiges über Kosmetik. Mit etwas mehr Wissen wirst du bald zum echten Profi." },
+    { min: 0.8, emoji: "💖", title: "Kosmetik-Expertin", text: "Wow, sehr stark! Du kennst dich richtig gut mit Pflege und Make-up aus." },
+    { min: 1, emoji: "👑", title: "Beauty-Queen", text: "Perfekt! Alle Fragen richtig – du bist eine absolute Kosmetik-Königin!" }
   ];
 
   const $ = id => document.getElementById(id);
@@ -323,10 +353,11 @@
   }
 
   function showResult(){
-    const r = [...results].reverse().find(x => score >= x.min);
+    const r = [...results].reverse().find(x => score / questions.length >= x.min);
     $("resultEmoji").textContent = r.emoji;
     $("resultTitle").textContent = r.title;
     $("finalScore").textContent = score;
+    $("totalQ").textContent = questions.length;
     $("resultText").textContent = r.text;
     $("stars").textContent = "★".repeat(score) + "☆".repeat(questions.length - score);
     show("result");
