@@ -3,13 +3,380 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Asmaa</title>
+<title>Beauty-Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:-apple-system,system-ui,sans-serif;background:#0f172a;color:#f8fafc}
-  main{text-align:center;padding:32px}
-  h1{font-size:clamp(28px,6vw,56px);margin:0 0 12px}
-  p{opacity:.7;margin:0}
+  :root{
+    --rose:#e8a0b4;
+    --rose-deep:#c9607f;
+    --rose-dark:#8f3752;
+    --blush:#fde8ee;
+    --cream:#fff8f3;
+    --gold:#c9a063;
+    --gold-light:#f3dcae;
+    --ink:#4a2433;
+    --ink-soft:#8a6573;
+    --ok:#3f9b72;
+    --ok-bg:#e4f5ec;
+    --bad:#c8455f;
+    --bad-bg:#fde4e9;
+    --serif:"Playfair Display",Georgia,"Times New Roman",serif;
+    --sans:"Poppins",system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    min-height:100vh;
+    font-family:var(--sans);
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 12% 8%,#ffd9e4 0,transparent 42%),
+      radial-gradient(circle at 90% 20%,#f9e3c7 0,transparent 38%),
+      radial-gradient(circle at 70% 95%,#f7cfdc 0,transparent 45%),
+      var(--cream);
+    display:flex;align-items:center;justify-content:center;
+    padding:24px 16px;
+    overflow-x:hidden;
+  }
+
+  /* schwebende Deko */
+  .deco{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .deco span{position:absolute;font-size:28px;opacity:.35;animation:float 14s ease-in-out infinite}
+  .deco span:nth-child(1){left:6%;top:14%;animation-delay:0s}
+  .deco span:nth-child(2){left:88%;top:10%;animation-delay:-3s;font-size:36px}
+  .deco span:nth-child(3){left:10%;top:78%;animation-delay:-6s;font-size:34px}
+  .deco span:nth-child(4){left:84%;top:72%;animation-delay:-9s}
+  .deco span:nth-child(5){left:48%;top:4%;animation-delay:-5s;font-size:22px}
+  .deco span:nth-child(6){left:52%;top:92%;animation-delay:-11s;font-size:24px}
+  @keyframes float{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-22px) rotate(8deg)}}
+
+  .card{
+    position:relative;z-index:1;
+    width:100%;max-width:560px;
+    background:rgba(255,255,255,.88);
+    backdrop-filter:blur(6px);
+    border-radius:28px;
+    padding:36px 32px 32px;
+    box-shadow:0 20px 50px -18px rgba(143,55,82,.35),0 0 0 1px rgba(201,160,99,.35);
+    text-align:center;
+  }
+  .card::before{
+    content:"";position:absolute;inset:8px;border-radius:21px;
+    border:1px dashed rgba(201,160,99,.55);pointer-events:none;
+  }
+
+  .badge{
+    display:inline-block;font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--gold);font-weight:600;margin-bottom:10px;
+  }
+  h1,h2{font-family:var(--serif);margin:0;color:var(--rose-dark);line-height:1.2}
+  h1{font-size:clamp(34px,8vw,48px)}
+  h1 em{font-style:italic;color:var(--rose-deep)}
+  .lead{color:var(--ink-soft);margin:14px auto 0;max-width:380px;line-height:1.6;font-size:15px}
+  .hero-icon{font-size:64px;margin:6px 0 4px;filter:drop-shadow(0 6px 8px rgba(201,96,127,.3))}
+
+  button{font-family:inherit;cursor:pointer}
+  .btn{
+    border:0;border-radius:999px;padding:14px 34px;font-size:16px;font-weight:600;
+    color:#fff;background:linear-gradient(135deg,var(--rose-deep),var(--rose-dark));
+    box-shadow:0 10px 22px -8px rgba(143,55,82,.6);
+    transition:transform .15s,box-shadow .15s;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 14px 26px -8px rgba(143,55,82,.65)}
+  .btn:active{transform:translateY(0)}
+  .btn:focus-visible,.answer:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+  .start{margin-top:28px}
+
+  .screen{display:none}
+  .screen.active{display:block;animation:pop .45s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  /* Fortschritt */
+  .top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px;font-size:13px;color:var(--ink-soft);font-weight:500}
+  .bar{flex:1;height:10px;border-radius:99px;background:var(--blush);overflow:hidden}
+  .bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--rose),var(--gold));transition:width .5s ease}
+  .score-pill{background:var(--blush);color:var(--rose-dark);padding:4px 12px;border-radius:99px;white-space:nowrap}
+
+  .q-icon{font-size:44px;margin-bottom:6px}
+  .question{font-size:clamp(21px,5vw,26px);margin-bottom:24px}
+
+  .answers{display:grid;gap:12px;text-align:left}
+  .answer{
+    display:flex;align-items:center;gap:14px;width:100%;
+    background:#fff;border:2px solid #f2d6de;border-radius:18px;
+    padding:14px 18px;font-size:15.5px;color:var(--ink);text-align:left;
+    transition:transform .15s,border-color .15s,background .15s,box-shadow .15s;
+  }
+  .answer .letter{
+    flex:none;width:34px;height:34px;border-radius:50%;
+    display:grid;place-items:center;font-weight:600;font-size:14px;
+    background:var(--blush);color:var(--rose-dark);transition:inherit;
+  }
+  .answer:not(:disabled):hover{transform:translateX(4px);border-color:var(--rose);box-shadow:0 8px 18px -10px rgba(201,96,127,.6)}
+  .answer:disabled{cursor:default}
+  .answer.correct{background:var(--ok-bg);border-color:var(--ok)}
+  .answer.correct .letter{background:var(--ok);color:#fff}
+  .answer.wrong{background:var(--bad-bg);border-color:var(--bad);animation:shake .4s}
+  .answer.wrong .letter{background:var(--bad);color:#fff}
+  .answer.dim{opacity:.55}
+  @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+  .feedback{
+    margin-top:20px;border-radius:18px;padding:16px 18px;text-align:left;
+    font-size:14.5px;line-height:1.55;display:none;
+  }
+  .feedback.show{display:block;animation:pop .35s ease}
+  .feedback.ok{background:var(--ok-bg);color:#215e45}
+  .feedback.no{background:var(--bad-bg);color:#85283b}
+  .feedback strong{display:block;font-family:var(--serif);font-size:19px;margin-bottom:4px}
+  .next{margin-top:22px;display:none}
+  .next.show{display:inline-block;animation:pop .35s ease}
+
+  /* Ergebnis */
+  .score-ring{
+    --p:0;
+    width:170px;height:170px;margin:18px auto 14px;border-radius:50%;
+    background:conic-gradient(var(--rose-deep) calc(var(--p)*1%),var(--blush) 0);
+    display:grid;place-items:center;position:relative;
+    box-shadow:0 12px 28px -12px rgba(143,55,82,.5);
+  }
+  .score-ring::before{content:"";position:absolute;inset:14px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 2px var(--gold-light)}
+  .score-ring div{position:relative;font-family:var(--serif);font-size:44px;font-weight:700;color:var(--rose-dark);line-height:1}
+  .score-ring small{display:block;font-family:var(--sans);font-size:12px;font-weight:500;color:var(--ink-soft);letter-spacing:.15em;text-transform:uppercase;margin-top:6px}
+  .stars{font-size:28px;letter-spacing:6px;margin:4px 0 8px}
+  .stars .off{opacity:.25;filter:grayscale(1)}
+  .result-title{font-size:clamp(26px,6vw,34px)}
+  .result-text{color:var(--ink-soft);margin:10px auto 0;max-width:400px;line-height:1.6;font-size:15px}
+  .again{margin-top:26px}
+
+  @media (max-width:480px){
+    .card{padding:30px 20px 26px;border-radius:24px}
+    .answer{padding:12px 14px;font-size:15px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
 </style>
 </head>
-<body><main><h1>Asmaa</h1><p>Diese Seite wurde automatisch angelegt.</p></main></body>
+<body>
+<div class="deco" aria-hidden="true">
+  <span>💄</span><span>🌸</span><span>✨</span><span>💅</span><span>🌷</span><span>🧴</span>
+</div>
+
+<main class="card">
+
+  <!-- Startseite -->
+  <section class="screen active" id="start">
+    <div class="badge">Dein Wissens-Check</div>
+    <div class="hero-icon" aria-hidden="true">💄</div>
+    <h1>Das große <em>Beauty-Quiz</em></h1>
+    <p class="lead">Wie fit bist du in Sachen Kosmetik und Hautpflege? Beantworte 5 Fragen und finde es heraus!</p>
+    <button class="btn start" id="startBtn">Quiz starten ✨</button>
+  </section>
+
+  <!-- Frage -->
+  <section class="screen" id="game">
+    <div class="top">
+      <span id="counter">Frage 1 von 5</span>
+      <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" id="barWrap"><i id="barFill"></i></div>
+      <span class="score-pill" id="livescore">0 Punkte</span>
+    </div>
+    <div class="q-icon" id="qIcon" aria-hidden="true"></div>
+    <h2 class="question" id="question"></h2>
+    <div class="answers" id="answers"></div>
+    <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+    <button class="btn next" id="nextBtn">Weiter →</button>
+  </section>
+
+  <!-- Ergebnis -->
+  <section class="screen" id="result">
+    <div class="badge">Dein Ergebnis</div>
+    <div class="score-ring" id="ring"><div><span id="finalScore">0</span><small>von 5</small></div></div>
+    <div class="stars" id="stars" aria-hidden="true"></div>
+    <h2 class="result-title" id="resultTitle"></h2>
+    <p class="result-text" id="resultText"></p>
+    <button class="btn again" id="againBtn">Nochmal spielen 💖</button>
+  </section>
+
+</main>
+
+<script>
+(function(){
+  var QUESTIONS = [
+    {
+      icon: "☀️",
+      q: "Welchen Lichtschutzfaktor sollte deine tägliche Gesichtspflege mindestens haben?",
+      a: ["LSF 10", "LSF 30 oder höher", "LSF 2"],
+      correct: 1,
+      why: "Dermatologen empfehlen mindestens LSF 30, denn UV-Strahlen sind der Hauptgrund für vorzeitige Hautalterung – und zwar auch an bewölkten Tagen."
+    },
+    {
+      icon: "💧",
+      q: "Was macht Hyaluronsäure in der Hautpflege?",
+      a: ["Sie bindet Feuchtigkeit in der Haut", "Sie färbt die Haut dunkler", "Sie entfernt Make-up"],
+      correct: 0,
+      why: "Hyaluronsäure kann ein Vielfaches ihres Gewichts an Wasser binden und polstert die Haut so mit Feuchtigkeit auf."
+    },
+    {
+      icon: "🌙",
+      q: "Wofür wird Retinol in Pflegeprodukten vor allem eingesetzt?",
+      a: ["Zur Haarentfernung", "Für festere Nägel", "Gegen Fältchen und für eine glattere Haut"],
+      correct: 2,
+      why: "Retinol, ein Vitamin-A-Derivat, regt die Zellerneuerung an, mindert feine Linien und verfeinert das Hautbild. Wichtig: abends anwenden und tagsüber Sonnenschutz nicht vergessen."
+    },
+    {
+      icon: "👁️",
+      q: "Wie lange darfst du eine geöffnete Wimperntusche höchstens verwenden?",
+      a: ["Etwa 2 Jahre", "Bis sie komplett leer ist", "Etwa 3 bis 6 Monate"],
+      correct: 2,
+      why: "Nach dem Öffnen vermehren sich Keime im Tuschefläschchen schnell. Nach spätestens 3 bis 6 Monaten solltest du sie austauschen, um Augenreizungen zu vermeiden."
+    },
+    {
+      icon: "🧴",
+      q: "Was bedeutet der Begriff „nicht komedogen“ auf einem Pflegeprodukt?",
+      a: ["Es ist besonders günstig", "Es verstopft die Poren nicht", "Es enthält keinen Duftstoff"],
+      correct: 1,
+      why: "Komedonen sind Mitesser. Ein nicht komedogenes Produkt ist so zusammengesetzt, dass es die Poren nicht verstopft – ideal bei unreiner oder zu Akne neigender Haut."
+    }
+  ];
+
+  var RESULTS = [
+    {min:0, icon:"🌱", title:"Beauty-Neuling", text:"Jede Schönheitskönigin hat mal klein angefangen! Probiere es gleich nochmal und lerne dabei Neues über Hautpflege."},
+    {min:2, icon:"🌸", title:"Pflege-Talent", text:"Du hast schon ein gutes Gespür für Kosmetik. Mit ein bisschen mehr Wissen wirst du bald zur Expertin."},
+    {min:4, icon:"💎", title:"Beauty-Expertin", text:"Wow, fast perfekt! Du kennst dich richtig gut mit Kosmetik und Hautpflege aus."},
+    {min:5, icon:"👑", title:"Beauty-Queen", text:"Makellos! Alle Fragen richtig beantwortet – du bist die absolute Kosmetik-Königin."}
+  ];
+
+  var $ = function(id){ return document.getElementById(id); };
+  var screens = { start: $("start"), game: $("game"), result: $("result") };
+  var index = 0, score = 0, locked = false;
+
+  function show(name){
+    Object.keys(screens).forEach(function(k){ screens[k].classList.toggle("active", k === name); });
+  }
+
+  function shuffle(arr){
+    for (var i = arr.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  function setProgress(done){
+    $("barFill").style.width = (done / QUESTIONS.length * 100) + "%";
+    $("barWrap").setAttribute("aria-valuenow", done);
+  }
+
+  function updateScore(){
+    $("livescore").textContent = score + (score === 1 ? " Punkt" : " Punkte");
+  }
+
+  function renderQuestion(){
+    var item = QUESTIONS[index];
+    locked = false;
+    $("counter").textContent = "Frage " + (index + 1) + " von " + QUESTIONS.length;
+    setProgress(index);
+    updateScore();
+    $("qIcon").textContent = item.icon;
+    $("question").textContent = item.q;
+
+    var fb = $("feedback");
+    fb.className = "feedback";
+    fb.textContent = "";
+    $("nextBtn").className = "btn next";
+    $("nextBtn").textContent = index === QUESTIONS.length - 1 ? "Ergebnis ansehen 🎀" : "Weiter →";
+
+    var box = $("answers");
+    box.innerHTML = "";
+    var order = shuffle(item.a.map(function(_, i){ return i; }));
+    order.forEach(function(origIdx, pos){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "answer";
+      b.dataset.idx = origIdx;
+      var l = document.createElement("span");
+      l.className = "letter";
+      l.textContent = String.fromCharCode(65 + pos);
+      var t = document.createElement("span");
+      t.textContent = item.a[origIdx];
+      b.appendChild(l); b.appendChild(t);
+      b.addEventListener("click", function(){ choose(b, origIdx); });
+      box.appendChild(b);
+    });
+  }
+
+  function choose(btn, idx){
+    if (locked) return;
+    locked = true;
+    var item = QUESTIONS[index];
+    var right = idx === item.correct;
+    if (right) score++;
+    updateScore();
+
+    Array.prototype.forEach.call($("answers").children, function(b){
+      var bi = Number(b.dataset.idx);
+      b.disabled = true;
+      if (bi === item.correct){
+        b.classList.add("correct");
+        b.querySelector(".letter").textContent = "✓";
+      } else if (b === btn){
+        b.classList.add("wrong");
+        b.querySelector(".letter").textContent = "✗";
+      } else {
+        b.classList.add("dim");
+      }
+    });
+
+    var fb = $("feedback");
+    fb.className = "feedback show " + (right ? "ok" : "no");
+    fb.innerHTML = "";
+    var h = document.createElement("strong");
+    h.textContent = right ? "Richtig! 🎉" : "Leider falsch 💔";
+    var p = document.createElement("span");
+    p.textContent = (right ? "" : "Die richtige Antwort ist: „" + item.a[item.correct] + "“. ") + item.why;
+    fb.appendChild(h); fb.appendChild(p);
+
+    setProgress(index + 1);
+    var next = $("nextBtn");
+    next.classList.add("show");
+    next.focus();
+  }
+
+  function showResult(){
+    var r = RESULTS[0];
+    RESULTS.forEach(function(x){ if (score >= x.min) r = x; });
+    $("finalScore").textContent = score;
+    $("resultTitle").textContent = r.icon + " " + r.title;
+    $("resultText").textContent = r.text;
+    var stars = "";
+    for (var i = 0; i < QUESTIONS.length; i++){
+      stars += i < score ? "⭐" : "<span class=\"off\">⭐</span>";
+    }
+    $("stars").innerHTML = stars;
+    var ring = $("ring");
+    ring.style.setProperty("--p", 0);
+    show("result");
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ ring.style.setProperty("--p", score / QUESTIONS.length * 100); });
+    });
+  }
+
+  function startGame(){
+    index = 0; score = 0;
+    show("game");
+    renderQuestion();
+  }
+
+  $("startBtn").addEventListener("click", startGame);
+  $("againBtn").addEventListener("click", startGame);
+  $("nextBtn").addEventListener("click", function(){
+    if (index < QUESTIONS.length - 1){ index++; renderQuestion(); }
+    else showResult();
+  });
+})();
+</script>
+</body>
 </html>
