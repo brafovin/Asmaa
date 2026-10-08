@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inselabenteuer – Fan-Shop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b1d3a;
+    --sea:#2e8bd8;
+    --sky:#4db8ff;
+    --gold:#ffd23f;
+    --gold-dark:#b3601c;
+    --red:#e8503a;
+    --ink:#2a1038;
+    --paper:#fff7d6;
+    --paper-2:#ffe49a;
+    --ok:#2e9e6b;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:'Nunito',system-ui,sans-serif;
+    font-weight:700;
+    color:var(--ink);
+    background:linear-gradient(180deg,var(--sky) 0,#8fd6ff 240px,#ffe9b0 240px,#ffe9b0 100%);
+    min-height:100vh;
+  }
+  .bangers,h1,h2,h3,.btn{font-family:'Bangers',Impact,'Arial Black',sans-serif;letter-spacing:.04em;font-weight:400}
+  .hidden{display:none !important}
+  a{color:inherit}
+
+  /* Kopf */
+  header{
+    background:var(--navy);
+    color:#fff;
+    position:sticky;top:0;z-index:20;
+    box-shadow:0 4px 18px rgba(0,0,0,.35);
+  }
+  .bar{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:14px}
+  .brand{font-family:'Bangers',Impact,sans-serif;font-size:1.7rem;letter-spacing:.05em;color:var(--gold);text-decoration:none;line-height:1}
+  .brand small{display:block;font-family:'Nunito',sans-serif;font-size:.7rem;color:#fff;letter-spacing:.1em;text-transform:uppercase}
+  .bar nav{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .play{font-size:.95rem;text-decoration:none;color:#fff;padding:8px 12px;border-radius:999px;border:2px solid rgba(255,255,255,.4)}
+  .play:hover{border-color:var(--gold);color:var(--gold)}
+  .cart-btn{
+    font:inherit;cursor:pointer;display:flex;align-items:center;gap:8px;
+    padding:8px 14px;border-radius:999px;border:2px solid var(--ink);
+    background:linear-gradient(180deg,#ffe36a,#ffb52e);color:var(--ink);font-weight:800;
+  }
+  .cart-btn:focus-visible,.btn:focus-visible,.chip:focus-visible,.qty button:focus-visible,input:focus-visible,.play:focus-visible{outline:3px solid #fff;outline-offset:2px;box-shadow:0 0 0 5px var(--ink)}
+  #cartCount{background:var(--red);color:#fff;border-radius:999px;min-width:24px;height:24px;display:grid;place-items:center;font-size:.8rem;padding:0 6px}
+
+  /* Hero */
+  .hero{max-width:1100px;margin:0 auto;padding:40px 16px 26px;text-align:center}
+  .hero h1{
+    margin:0;font-size:clamp(2.6rem,9vw,4.6rem);line-height:.95;color:var(--gold);
+    -webkit-text-stroke:.06em var(--ink);paint-order:stroke fill;
+    text-shadow:0 .08em 0 var(--red),0 .16em 0 var(--ink);transform:rotate(-1.5deg);
+  }
+  .hero p{margin:1.3em auto 0;max-width:36em;font-size:1.05rem;line-height:1.5;color:var(--ink)}
+  .perks{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:18px 0 0;padding:0;list-style:none;font-size:.9rem}
+  .perks li{background:rgba(255,255,255,.7);border:2px solid var(--ink);border-radius:999px;padding:6px 14px}
+
+  /* Filter */
+  main{max-width:1100px;margin:0 auto;padding:0 16px 60px}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px;justify-content:center}
+  .chip{
+    font:inherit;cursor:pointer;padding:8px 16px;border-radius:999px;
+    border:2px solid var(--ink);background:#fff;color:var(--ink);font-weight:800;
+  }
+  .chip[aria-pressed="true"]{background:var(--ink);color:var(--gold)}
+
+  /* Produkte */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px}
+  .card{
+    background:linear-gradient(180deg,var(--paper),var(--paper-2));
+    border:3px solid var(--ink);border-radius:20px;overflow:hidden;
+    box-shadow:0 6px 0 var(--gold-dark),0 14px 26px rgba(0,0,0,.2);
+    display:flex;flex-direction:column;
+    transition:transform .15s;
+  }
+  .card:hover{transform:translateY(-4px)}
+  .pic{height:150px;display:grid;place-items:center;font-size:76px;border-bottom:3px solid var(--ink);position:relative}
+  .badge{position:absolute;top:10px;left:10px;font-family:'Bangers',Impact,sans-serif;letter-spacing:.05em;background:var(--red);color:#fff;border:2px solid var(--ink);border-radius:8px;padding:2px 9px;font-size:.95rem;transform:rotate(-4deg)}
+  .info{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .info h3{margin:0;font-size:1.45rem;color:var(--red);-webkit-text-stroke:.03em var(--ink);paint-order:stroke fill;line-height:1.05}
+  .info p{margin:0;font-size:.88rem;line-height:1.4;flex:1}
+  .buy{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}
+  .price{font-family:'Bangers',Impact,sans-serif;font-size:1.7rem;color:#8a4a00;letter-spacing:.03em}
+  .btn{
+    font-size:1.2rem;cursor:pointer;color:var(--ink);
+    background:linear-gradient(180deg,#ffe36a,#ffb52e);
+    border:3px solid var(--ink);border-radius:12px;padding:6px 16px;
+    box-shadow:0 4px 0 var(--gold-dark);transition:transform .1s;
+  }
+  .btn:hover{transform:translateY(-2px)}
+  .btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--gold-dark)}
+  .btn.full{width:100%;font-size:1.5rem;padding:10px}
+  .btn.ghost{background:#fff;box-shadow:0 4px 0 #bbb}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  /* Warenkorb */
+  .overlay{position:fixed;inset:0;background:rgba(8,12,40,.6);z-index:30}
+  aside#drawer{
+    position:fixed;top:0;right:0;bottom:0;width:min(440px,100%);z-index:31;
+    background:linear-gradient(180deg,var(--paper),var(--paper-2));
+    border-left:4px solid var(--ink);display:flex;flex-direction:column;
+    transform:translateX(100%);transition:transform .25s ease;
+  }
+  aside#drawer.open{transform:none}
+  .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:3px solid var(--ink);background:var(--navy);color:var(--gold)}
+  .drawer-head h2{margin:0;font-size:1.8rem}
+  .x{font:inherit;font-size:1.4rem;cursor:pointer;background:none;border:0;color:#fff;padding:4px 10px}
+  .drawer-body{flex:1;overflow:auto;padding:14px 18px}
+  .empty{text-align:center;padding:40px 10px;line-height:1.6}
+  .empty .big{font-size:56px;display:block}
+  .line{display:grid;grid-template-columns:54px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:2px dashed rgba(42,16,56,.3)}
+  .line .em{font-size:36px;text-align:center}
+  .line b{display:block;line-height:1.2}
+  .line small{opacity:.75}
+  .qty{display:inline-flex;align-items:center;gap:6px;margin-top:4px}
+  .qty button{font:inherit;width:28px;height:28px;border-radius:8px;border:2px solid var(--ink);background:#fff;cursor:pointer;font-weight:800;line-height:1}
+  .qty span{min-width:22px;text-align:center}
+  .remove{font:inherit;font-size:.8rem;background:none;border:0;text-decoration:underline;cursor:pointer;color:var(--red);margin-top:4px;padding:0}
+  .sum{padding:14px 18px 18px;border-top:3px solid var(--ink);background:rgba(255,255,255,.55)}
+  .sum .row{display:flex;justify-content:space-between;margin:3px 0}
+  .sum .total{font-family:'Bangers',Impact,sans-serif;font-size:1.7rem;margin:6px 0 12px;letter-spacing:.04em}
+  .hint{font-size:.82rem;color:#7a3d00;margin:4px 0 10px}
+
+  /* Kasse */
+  .modal{
+    position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:16px;overflow:auto;
+  }
+  .modal .panel{
+    width:min(520px,100%);max-height:100%;overflow:auto;
+    background:linear-gradient(180deg,var(--paper),var(--paper-2));
+    border:4px solid var(--ink);border-radius:22px;padding:22px 24px;
+    box-shadow:0 8px 0 var(--gold-dark),0 20px 50px rgba(0,0,0,.5);
+  }
+  .panel h2{margin:0 0 6px;font-size:2.2rem;color:var(--red);-webkit-text-stroke:.04em var(--ink);paint-order:stroke fill}
+  label{display:block;margin:10px 0 0;font-size:.9rem}
+  input[type=text],input[type=email]{
+    width:100%;font:inherit;padding:10px 12px;margin-top:4px;border-radius:10px;border:2px solid var(--ink);background:#fff;color:var(--ink);
+  }
+  .two{display:grid;grid-template-columns:1fr 2fr;gap:10px}
+  .demo{margin:14px 0 0;padding:10px 12px;border-radius:12px;background:#fff;border:2px dashed var(--red);font-size:.82rem;line-height:1.45}
+  .check{display:flex;gap:8px;align-items:flex-start;font-size:.85rem;margin-top:12px}
+  .check input{margin-top:3px;width:18px;height:18px;flex:none}
+  .actions{display:flex;gap:10px;margin-top:16px}
+  .actions .btn{flex:1}
+  .ordernum{font-family:'Bangers',Impact,sans-serif;font-size:2rem;color:#8a4a00;letter-spacing:.06em}
+  .err{color:#b3001b;font-size:.82rem;margin-top:4px}
+
+  /* Toast */
+  #toast{
+    position:fixed;left:50%;bottom:24px;transform:translate(-50%,40px);opacity:0;z-index:50;
+    background:var(--ink);color:#fff;padding:10px 20px;border-radius:999px;border:2px solid var(--gold);
+    transition:.25s;pointer-events:none;max-width:90vw;text-align:center;
+  }
+  #toast.show{transform:translate(-50%,0);opacity:1}
+
+  footer{background:var(--navy);color:#cfe4ff;text-align:center;padding:26px 16px;font-size:.85rem;line-height:1.6}
+  footer a{color:var(--gold)}
+
+  @media (max-width:520px){
+    .play{display:none}
+    .two{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important;scroll-behavior:auto !important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <a class="brand" href="shop.html">Inselabenteuer<small>Fan-Shop</small></a>
+    <nav>
+      <a class="play" href="abenteuer.html">🎮 Spiel starten</a>
+      <button class="cart-btn" id="cartBtn" type="button" aria-label="Warenkorb öffnen">🛒 <span>Warenkorb</span> <span id="cartCount">0</span></button>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>Fan-Shop</h1>
+  <p>Hol dir Luffy, Zoro und die sechs bunten Inseln nach Hause – vom T-Shirt bis zum Mauspad. Für alle, die immer einen neuen Rekord jagen!</p>
+  <ul class="perks">
+    <li>🚚 Gratis Versand ab 40 €</li>
+    <li>↩️ 14 Tage Rückgabe</li>
+    <li>🎁 Mit Rekord-Sticker</li>
+  </ul>
+</section>
+
+<main>
+  <div class="filters" id="filters" role="group" aria-label="Kategorie wählen"></div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer>
+  <p><b>Inselabenteuer – Luffy &amp; Zoro</b> · Der Shop ist eine Vorschau: Bestellungen werden noch nicht wirklich ausgeliefert und es wird nichts bezahlt.</p>
+  <p><a href="abenteuer.html">Zum Spiel</a> · <a href="index.html">Kosmetik-Quiz</a> · <a href="welt3d.html">3D-Insel</a></p>
+</footer>
+
+<div class="overlay hidden" id="overlay"></div>
+
+<!-- Warenkorb -->
+<aside id="drawer" aria-label="Warenkorb" aria-hidden="true">
+  <div class="drawer-head">
+    <h2>Dein Warenkorb</h2>
+    <button class="x" id="closeCart" type="button" aria-label="Warenkorb schließen">✕</button>
+  </div>
+  <div class="drawer-body" id="cartBody"></div>
+  <div class="sum" id="cartSum"></div>
+</aside>
+
+<!-- Kasse -->
+<div class="modal hidden" id="checkout" role="dialog" aria-modal="true" aria-labelledby="coTitle">
+  <div class="panel">
+    <form id="coForm" novalidate>
+      <h2 id="coTitle">Zur Kasse</h2>
+      <p id="coSummary" style="margin:0 0 4px"></p>
+      <label>Name
+        <input type="text" id="fName" autocomplete="name" required>
+        <div class="err" id="eName"></div>
+      </label>
+      <label>E-Mail
+        <input type="email" id="fMail" autocomplete="email" required>
+        <div class="err" id="eMail"></div>
+      </label>
+      <label>Straße und Hausnummer
+        <input type="text" id="fStreet" autocomplete="street-address" required>
+        <div class="err" id="eStreet"></div>
+      </label>
+      <div class="two">
+        <label>PLZ
+          <input type="text" id="fZip" inputmode="numeric" autocomplete="postal-code" maxlength="5" required>
+          <div class="err" id="eZip"></div>
+        </label>
+        <label>Ort
+          <input type="text" id="fCity" autocomplete="address-level2" required>
+          <div class="err" id="eCity"></div>
+        </label>
+      </div>
+      <div class="check">
+        <input type="checkbox" id="fParent">
+        <label for="fParent" style="margin:0">Ich bin über 16 oder meine Eltern sind mit der Bestellung einverstanden.</label>
+      </div>
+      <div class="err" id="eParent"></div>
+      <p class="demo">🧪 <b>Vorschau-Modus:</b> Hier wird nichts bezahlt und nichts verschickt. Deine Eingaben verlassen diesen Browser nicht.</p>
+      <div class="actions">
+        <button class="btn ghost" type="button" id="coCancel">Zurück</button>
+        <button class="btn" type="submit">Bestellung testen</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Bestätigung -->
+<div class="modal hidden" id="done" role="dialog" aria-modal="true" aria-labelledby="doneTitle">
+  <div class="panel" style="text-align:center">
+    <div style="font-size:64px" aria-hidden="true">🏴‍☠️</div>
+    <h2 id="doneTitle">Land in Sicht!</h2>
+    <p>Danke, <b id="doneName"></b>! Deine Test-Bestellung ist eingegangen.</p>
+    <p class="ordernum" id="doneNum"></p>
+    <p id="doneSum" style="line-height:1.5"></p>
+    <p class="demo" style="text-align:left">🧪 Das war eine Vorschau – es wurde nichts bezahlt oder verschickt.</p>
+    <div class="actions"><button class="btn" type="button" id="doneClose">Weiter stöbern</button></div>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+  const PRODUCTS = [
+    { id:"tee-luffy",  name:"Helden-T-Shirt Luffy",  cat:"Kleidung", price:24.90, emoji:"👕", bg:"#ffd9cf", desc:"Weiches Baumwoll-Shirt mit Gum-Gum-Pistole auf der Brust.", badge:"Bestseller" },
+    { id:"tee-zoro",   name:"Helden-T-Shirt Zoro",   cat:"Kleidung", price:24.90, emoji:"👕", bg:"#d3f0dc", desc:"Weiches Baumwoll-Shirt mit scharfem Schwert-Schlag." },
+    { id:"hoodie",     name:"Insel-Hoodie",          cat:"Kleidung", price:44.90, emoji:"🧥", bg:"#cfe4ff", desc:"Kuschelig warm, mit allen sechs Inseln als Stickerei." },
+    { id:"mug",        name:"Rekord-Tasse",          cat:"Zuhause",  price:12.90, emoji:"☕", bg:"#fff0b8", desc:"„Rekord: 263 Münzen“ – Platz für deinen eigenen Rekord inklusive." },
+    { id:"poster",     name:"Poster „Sechs Inseln“", cat:"Zuhause",  price:14.90, emoji:"🏝️", bg:"#c9f1f7", desc:"Großes A2-Poster mit allen Inseln im Anime-Stil.", badge:"Neu" },
+    { id:"stickers",   name:"Münzen-Sticker-Set",    cat:"Zubehör",  price:4.90,  emoji:"🪙", bg:"#fff0b8", desc:"20 wetterfeste Sticker für Laptop, Heft und Handy." },
+    { id:"mousepad",   name:"Mauspad XL",            cat:"Zubehör",  price:16.90, emoji:"🖱️", bg:"#e5d6ff", desc:"Riesig, rutschfest und perfekt zum Zocken." },
+    { id:"keyring",    name:"Goldmünzen-Anhänger",   cat:"Zubehör",  price:5.90,  emoji:"🔑", bg:"#ffe6a8", desc:"Metall-Anhänger in Form einer Goldmünze." },
+    { id:"backpack",   name:"Abenteuer-Rucksack",    cat:"Zubehör",  price:34.90, emoji:"🎒", bg:"#ffd9cf", desc:"Viel Platz für Schule, Training und die nächste Schatzsuche." }
+  ];
+  const SHIPPING = 4.90, FREE_FROM = 40;
+  const KEY = "insel-cart";
+
+  const $ = id => document.getElementById(id);
+  const eur = n => n.toLocaleString("de-DE", { style:"currency", currency:"EUR" });
+  const byId = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
+
+  let cart = {};
+  try { cart = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) {}
+  // Ungültige Einträge (z. B. veraltete Produkte) entfernen
+  Object.keys(cart).forEach(id => { if (!byId[id] || !(cart[id] > 0)) delete cart[id]; });
+
+  let filter = "Alle";
+  let lastFocus = null;
+
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) {} }
+
+  function el(tag, props = {}, ...kids){
+    const n = document.createElement(tag);
+    Object.entries(props).forEach(([k, v]) => {
+      if (k === "class") n.className = v;
+      else if (k === "text") n.textContent = v;
+      else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+      else n.setAttribute(k, v);
+    });
+    kids.forEach(k => n.append(k));
+    return n;
+  }
+
+  /* ---------- Katalog ---------- */
+  function renderFilters(){
+    const box = $("filters");
+    box.replaceChildren();
+    ["Alle", ...new Set(PRODUCTS.map(p => p.cat))].forEach(c => {
+      box.append(el("button", { class:"chip", type:"button", "aria-pressed": String(c === filter), text:c,
+        onclick: () => { filter = c; renderFilters(); renderGrid(); } }));
+    });
+  }
+
+  function renderGrid(){
+    const grid = $("grid");
+    grid.replaceChildren();
+    PRODUCTS.filter(p => filter === "Alle" || p.cat === filter).forEach(p => {
+      const pic = el("div", { class:"pic", "aria-hidden":"true", style:`background:${p.bg}` }, p.emoji);
+      if (p.badge) pic.append(el("span", { class:"badge", text:p.badge }));
+      const card = el("article", { class:"card" },
+        pic,
+        el("div", { class:"info" },
+          el("h3", { text:p.name }),
+          el("p", { text:p.desc }),
+          el("div", { class:"buy" },
+            el("span", { class:"price", text:eur(p.price) }),
+            el("button", { class:"btn", type:"button", "aria-label":`${p.name} in den Warenkorb`, text:"In den Korb",
+              onclick: () => { add(p.id); toast(`${p.emoji} ${p.name} im Warenkorb`); } }))));
+      grid.append(card);
+    });
+  }
+
+  /* ---------- Warenkorb ---------- */
+  function add(id){ cart[id] = Math.min((cart[id] || 0) + 1, 10); save(); renderCart(); }
+  function setQty(id, q){
+    if (q <= 0) delete cart[id]; else cart[id] = Math.min(q, 10);
+    save(); renderCart();
+  }
+
+  function totals(){
+    const items = Object.entries(cart).map(([id, q]) => ({ p:byId[id], q }));
+    const sub = items.reduce((s, i) => s + i.p.price * i.q, 0);
+    const ship = items.length === 0 || sub >= FREE_FROM ? 0 : SHIPPING;
+    return { items, sub, ship, total: sub + ship, count: items.reduce((s, i) => s + i.q, 0) };
+  }
+
+  function renderCart(){
+    const t = totals();
+    $("cartCount").textContent = t.count;
+    const body = $("cartBody"), sum = $("cartSum");
+    body.replaceChildren();
+    sum.replaceChildren();
+
+    if (!t.items.length){
+      body.append(el("div", { class:"empty" },
+        el("span", { class:"big", "aria-hidden":"true", text:"🧺" }),
+        "Dein Warenkorb ist noch leer. Zeit für eine Schatzsuche!"));
+      return;
+    }
+
+    t.items.forEach(({ p, q }) => {
+      body.append(el("div", { class:"line" },
+        el("div", { class:"em", "aria-hidden":"true", text:p.emoji }),
+        el("div", {},
+          el("b", { text:p.name }),
+          el("small", { text:`${eur(p.price)} pro Stück` }),
+          el("div", { class:"qty" },
+            el("button", { type:"button", "aria-label":`Weniger ${p.name}`, text:"−", onclick: () => setQty(p.id, q - 1) }),
+            el("span", { "aria-live":"polite", text:String(q) }),
+            el("button", { type:"button", "aria-label":`Mehr ${p.name}`, text:"+", onclick: () => setQty(p.id, q + 1) })),
+          el("div", {}, el("button", { class:"remove", type:"button", text:"Entfernen", onclick: () => setQty(p.id, 0) }))),
+        el("b", { text:eur(p.price * q) })));
+    });
+
+    const missing = FREE_FROM - t.sub;
+    sum.append(
+      el("div", { class:"row" }, el("span", { text:"Zwischensumme" }), el("span", { text:eur(t.sub) })),
+      el("div", { class:"row" }, el("span", { text:"Versand" }), el("span", { text: t.ship ? eur(t.ship) : "gratis 🎉" })));
+    if (missing > 0) sum.append(el("p", { class:"hint", text:`Noch ${eur(missing)} bis zum Gratis-Versand!` }));
+    sum.append(
+      el("div", { class:"row total" }, el("span", { text:"Gesamt" }), el("span", { text:eur(t.total) })),
+      el("button", { class:"btn full", type:"button", text:"Zur Kasse", onclick: openCheckout }));
+  }
+
+  function openCart(){
+    lastFocus = document.activeElement;
+    $("drawer").classList.add("open");
+    $("drawer").setAttribute("aria-hidden", "false");
+    $("overlay").classList.remove("hidden");
+    $("closeCart").focus();
+  }
+  function closeCart(){
+    $("drawer").classList.remove("open");
+    $("drawer").setAttribute("aria-hidden", "true");
+    $("overlay").classList.add("hidden");
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  /* ---------- Kasse ---------- */
+  const fields = [
+    ["fName",   "eName",   v => v.trim().length >= 2,                         "Bitte deinen Namen eintragen."],
+    ["fMail",   "eMail",   v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()),   "Bitte eine gültige E-Mail eintragen."],
+    ["fStreet", "eStreet", v => v.trim().length >= 4,                         "Bitte Straße und Hausnummer eintragen."],
+    ["fZip",    "eZip",    v => /^\d{5}$/.test(v.trim()),                     "Bitte eine 5-stellige PLZ eintragen."],
+    ["fCity",   "eCity",   v => v.trim().length >= 2,                         "Bitte den Ort eintragen."]
+  ];
+
+  function openCheckout(){
+    const t = totals();
+    if (!t.items.length) return;
+    $("coSummary").textContent = `${t.count} Artikel · Gesamt ${eur(t.total)}`;
+    closeCart();
+    $("overlay").classList.remove("hidden");
+    $("checkout").classList.remove("hidden");
+    $("fName").focus();
+  }
+  function closeCheckout(){
+    $("checkout").classList.add("hidden");
+    $("overlay").classList.add("hidden");
+  }
+
+  function submitOrder(e){
+    e.preventDefault();
+    let ok = true;
+    fields.forEach(([f, er, test, msg]) => {
+      const valid = test($(f).value);
+      $(er).textContent = valid ? "" : msg;
+      $(f).setAttribute("aria-invalid", String(!valid));
+      if (!valid && ok){ $(f).focus(); }
+      ok = ok && valid;
+    });
+    const parentOk = $("fParent").checked;
+    $("eParent").textContent = parentOk ? "" : "Bitte bestätige das Einverständnis.";
+    if (!parentOk && ok) $("fParent").focus();
+    if (!ok || !parentOk) return;
+
+    const t = totals();
+    if (!t.items.length) return;
+    const num = "IA-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+    $("doneName").textContent = $("fName").value.trim();
+    $("doneNum").textContent = num;
+    $("doneSum").textContent = `${t.count} Artikel · ${eur(t.total)} (Test, nicht bezahlt)`;
+
+    cart = {}; save(); renderCart();
+    $("coForm").reset();
+    $("checkout").classList.add("hidden");
+    $("done").classList.remove("hidden");
+    $("doneClose").focus();
+  }
+
+  function toast(msg){
+    const t = $("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toast.t);
+    toast.t = setTimeout(() => t.classList.remove("show"), 1800);
+  }
+
+  /* ---------- Events ---------- */
+  $("cartBtn").addEventListener("click", openCart);
+  $("closeCart").addEventListener("click", closeCart);
+  $("overlay").addEventListener("click", () => { closeCart(); closeCheckout(); });
+  $("coCancel").addEventListener("click", () => { closeCheckout(); openCart(); });
+  $("coForm").addEventListener("submit", submitOrder);
+  $("doneClose").addEventListener("click", () => { $("done").classList.add("hidden"); $("overlay").classList.add("hidden"); });
+  document.addEventListener("keydown", e => {
+    if (e.key !== "Escape") return;
+    closeCart(); closeCheckout();
+    $("done").classList.add("hidden");
+    $("overlay").classList.add("hidden");
+  });
+
+  renderFilters();
+  renderGrid();
+  renderCart();
+</script>
+</body>
+</html>
