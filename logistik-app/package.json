@@ -1,0 +1,37 @@
+{
+  "name": "logiflow",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "LogiFlow – Logistikverwaltung (Dashboard, Aufträge, Lager, Transport und mehr)",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n server,web -c blue,green \"npm:dev:server\" \"npm:dev:web\"",
+    "dev:server": "tsx watch server/index.ts",
+    "dev:web": "vite",
+    "build": "tsc --noEmit && vite build",
+    "start": "tsx server/index.ts",
+    "typecheck": "tsc --noEmit",
+    "db:reset": "tsx server/reset.ts"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "lucide-react": "^1.54.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.6",
+    "tsx": "^4.23.15"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.20.5",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "concurrently": "^10.0.6",
+    "typescript": "^7.0.2",
+    "vite": "^5.4.21"
+  }
+}
